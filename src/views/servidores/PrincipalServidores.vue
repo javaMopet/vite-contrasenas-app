@@ -236,14 +236,16 @@ export default {
   },
   methods: {
     postSaveServidor(data) {
-      if (data.codigoError === 0) {
-        var myModalEl = document.getElementById('formServidor')
-        var modal = Modal.getInstance(myModalEl)
-        modal.hide();
+      console.log('postSaveServidor');
+      console.log(data);
+      if (data.codigoError === 0) {        
         this.mandarAlertaAccionSuccess(data.mensaje);
       } else if (data.codigoError > 0) {
         this.mandarAlertaAccionError(data.mensaje);
       }
+      var myModalEl = document.getElementById('formServidor')
+        var modal = Modal.getInstance(myModalEl)
+        modal.hide();
     },
     loadServidores() {},
     preDelete(indice, id) {

@@ -106,10 +106,7 @@ export default {
           });
           console.log('no Se llega a ningun error');
           this.reiniciarServidor();
-        } catch (error) {
-          console.info('recuperando error');
-          console.error(error);
-          console.error(error.message);
+        } catch (error) {          
           this.$emit("savedServidor",{
             codigoError: 1,
             mensaje: error.message

@@ -1,7 +1,5 @@
-<template>
-  <div class="container" style="height: 30px">
-    <the-header></the-header>
-  </div>
+<template>  
+    <the-header></the-header>  
   <div class="container-fluid m-0 p-0 h-100">
     <router-view />
   </div>

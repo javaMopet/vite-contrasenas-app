@@ -1,5 +1,5 @@
 <template>
-  <section class="w-100 bg-dark">
+  <section class="container-fluid bg-dark">
     <nav
       class="
             navbar navbar-expand-lg navbar-dark
