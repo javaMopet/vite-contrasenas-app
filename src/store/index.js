@@ -12,7 +12,7 @@ export default createStore({
   },
   actions: {
   },
-  modules: {
+  modules: {    
     auth: authModule,
     servidores: servidoresModule,
     empleados: empleadosModule,

@@ -1,48 +1,6 @@
 <template>
   <div class="container-lg">
-    <div
-      :class="{
-        alert: alertSuccess,
-        'alert-dismissible':true,
-        'alert-success': true,
-        fade: true,
-        show: alertSuccess,
-      }"
-      role="alert"
-    >
-      <svg
-        class="bi flex-shrink-0 me-2"
-        width="24"
-        height="24"
-        role="img"
-        aria-label="Success:"
-      >
-        <use xlink:href="#check-circle-fill" />
-      </svg>
-      <strong>El servidor: </strong> {{ mensajeSuccess }}
-    </div>
-    <div
-      :class="{
-        alert: alertError,
-        'alert-danger': true,
-        'alert-dismissible':true,
-        fade: true,
-        show: alertError,
-      }"
-      role="alert"
-    >
-      <svg
-        class="bi flex-shrink-0 me-2"
-        width="24"
-        height="24"
-        role="img"
-        aria-label="Success:"
-      >
-        <use xlink:href="#check-circle-fill" />
-      </svg>
-      <strong> {{ mensajeError }}</strong>
-    </div>
-
+    <div id="liveAlertPlaceholder"></div>
     <h2 class="text-dark my-3">Servidores</h2>
     <!-- TODO: LISTA DE SERVIDORES  -->
     <div class="container-fluid mt-4 p-0">
@@ -167,23 +125,24 @@
         </div>
       </div>
     </div>
-
-    <div
-      class="modal fade"
-      id="formServidor"
-      data-bs-backdrop="modal"
-      tabindex="-1"
-      aria-labelledby="formTitleLabel"
-      aria-hidden="true"
-    >
-      <form-servidor
-        @savedServidor="postSaveServidor"
-        :servidorId="servidorModificar.id"
-        :servidorIndice="servidorModificar.indice"
-        :servidorNombre="servidorModificar.nombre"
-        :servidorIp="servidorModificar.ip"
-      ></form-servidor>
-    </div>
+    <teleport to="body">
+      <div
+        class="modal fade"
+        id="formServidor"
+        data-bs-backdrop="modal"
+        tabindex="-1"
+        aria-labelledby="formTitleLabel"
+        aria-hidden="true"
+      >
+        <form-servidor
+          @savedServidor="postSaveServidor"
+          :servidorId="servidorModificar.id"
+          :servidorIndice="servidorModificar.indice"
+          :servidorNombre="servidorModificar.nombre"
+          :servidorIp="servidorModificar.ip"
+        ></form-servidor>
+      </div>
+    </teleport>
   </div>
 </template>
 <script>
@@ -193,13 +152,9 @@ import { Modal } from "bootstrap";
 export default {
   data: function () {
     return {
-      email: "",
-      valid: false,
-      submitted: false,
       isLoading: false,
       error: null,
       saving: null,
-      mensajeSuccess: "",
       mensajeError: "",
       indice_eliminar: null,
       id_eliminar: null,
@@ -220,19 +175,13 @@ export default {
     isLoggedIn() {
       return this.$store.getters.isAuthenticated;
     },
-    alertSuccess() {
-      return !!this.saving && this.mensajeSuccess.length > 0;
-    },
-    alertError() {
-      return !!this.saving && this.mensajeError.length > 0;
-    },
   },
   methods: {
     postSaveServidor(data) {
-      if (data.codigoError === 0) {
-        this.mandarAlertaAccionSuccess(data.mensaje);
-      } else if (data.codigoError > 0) {
-        this.mandarAlertaAccionError(data.mensaje);
+      if (data.errorCode === 0) {
+        this.alert(data.message, "success");
+      } else if (data.errorCode > 0) {
+        this.alert(data.message, "danger");
       }
       var myModalEl = document.getElementById("formServidor");
       // var modal = bootstrap.modal.getInstance(myModalEl);
@@ -281,14 +230,24 @@ export default {
         this.saving = null;
       }, 4000);
     },
+    alert(message, type) {
+      var alertPlaceholder = document.getElementById("liveAlertPlaceholder");
+      var wrapper = document.createElement("div");
+      wrapper.innerHTML =
+        '<div class="alert alert-' +
+        type +
+        ' alert-dismissible" role="alert">' +
+        message +
+        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+
+      alertPlaceholder.append(wrapper);
+    },
   },
-  mounted() {
-    this.isLoading = true;
+  async mounted() {
     try {
-      this.$store.dispatch("servidores/listarServidores");
-      this.isLoading = false;
+      await this.$store.dispatch("servidores/listarServidores");
     } catch (error) {
-      this.isLoading = false;
+      this.alert(error || "Error desconocido.", "danger");
     }
   },
 };

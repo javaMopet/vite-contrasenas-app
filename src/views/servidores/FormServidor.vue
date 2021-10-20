@@ -118,15 +118,14 @@ export default {
           });
           this.submitted = true;
           this.$emit("savedServidor", {
-            codigoError: 0,
-            mensaje: " se ha guardado exitosamente.",
-          });
-          console.log("no Se llega a ningun error");
+            errorCode: 0,
+            message: "El servidor se ha guardado exitosamente.",
+          });          
           this.reiniciarServidor();
-        } catch (error) {
+        } catch (error) {          
           this.$emit("savedServidor", {
-            codigoError: 1,
-            mensaje: error.message,
+            errorCode: 1,
+            message: error,
           });
         }
       }

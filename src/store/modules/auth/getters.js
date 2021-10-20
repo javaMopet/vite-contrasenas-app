@@ -8,9 +8,7 @@ export default {
     empleadoNombre(state){
         return state.empleadoNombre;
     },
-    isEmpleadoAdmin(state){
-        console.log('isEmpleadoAdmin')
-        console.log(state.empleadoRol)        
+    isEmpleadoAdmin(state){                
         if (state.empleadoRol && parseInt(state.empleadoRol) === 1){
             return true;
         }
@@ -19,9 +17,7 @@ export default {
     token(state){
         return state.token;
     },
-    isAuthenticated(state){  
-        /* console.info('getter isAuthenticated')
-        console.log(!!state.token)       */
+    isAuthenticated(state){          
         return !!state.token; //Con la doble marca de exclamacion convertimos a booleano
     }
 };
