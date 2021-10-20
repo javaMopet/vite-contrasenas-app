@@ -1,57 +1,71 @@
 <template>
-  <div class="container">
-    <div>
-      <!-- <div class="card card-head mt-"></div> -->
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formTitleLabel">AgregarServidor</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
       <form
         class="form-wrap container mt-2"
         @submit.prevent="saveOrUpdateServidor"
       >
-        <div>
-          <div class="form-group">
-            <label for="name" class="form-label"
-              >Nombre Servidor: {{ servidor.indice }} - {{ servidor.id }}</label
-            >
-            <!-- v-bind:value="nombreProp" -->
-            <input
-              id="name"
-              v-model="servidor.nombre"
-              v-bind:class="{
-                'form-control': true,
-                'is-invalid': !validNombre() && nombreBlured,
-              }"
-              v-on:blur="nombreBlured = true"
-            />
-            <div class="invalid-feedback">
-              Favor de ingresar el nombre del servidor.
+        <div class="modal-body">
+          <div>
+            <div class="form-group">
+              <label for="name" class="form-label"
+                >Nombre Servidor: {{ servidor.indice }} -
+                {{ servidor.id }}</label
+              >
+              <!-- v-bind:value="nombreProp" -->
+              <input
+                id="name"
+                v-model="servidor.nombre"
+                v-bind:class="{
+                  'form-control': true,
+                  'is-invalid': !validNombre() && nombreBlured,
+                }"
+                v-on:blur="nombreBlured = true"
+              />
+              <div class="invalid-feedback">
+                Favor de ingresar el nombre del servidor.
+              </div>
+            </div>
+            <div class="form-group mb-2">
+              <label for="ip">Ip:</label>
+              <input
+                v-model="servidor.ip"
+                v-bind:class="{
+                  'form-control': true,
+                  'is-invalid': !validIp() && ipBlured,
+                }"
+                v-on:blur="ipBlured = true"
+              />
+              <div class="invalid-feedback">
+                Favor de ingresar la ip del servidor.
+              </div>
+            </div>
+            <div class="container d-flex justify-content-center">
+              <button
+                class="btn btn-success me-2"
+                type="button"
+                @click="nuevo"
+                v-if="servidor.id"
+              >
+                Nuevo
+              </button>
             </div>
           </div>
-          <div class="form-group mb-2">
-            <label for="ip">Ip:</label>
-            <input
-              v-model="servidor.ip"
-              v-bind:class="{
-                'form-control': true,
-                'is-invalid': !validIp() && ipBlured,
-              }"
-              v-on:blur="ipBlured = true"
-            />
-            <div class="invalid-feedback">
-              Favor de ingresar la ip del servidor.
-            </div>
-          </div>
-          <div class="container d-flex justify-content-center">
-            <button
-              class="btn btn-success me-2"
-              type="button"
-              @click="nuevo"
-              v-if="servidor.id"
-            >
-              Nuevo
-            </button>
-            <button type="submit" class="btn btn btn-primary">
-              {{ mode }}
-            </button>
-          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">{{ mode }}</button>
         </div>
       </form>
     </div>
@@ -98,18 +112,21 @@ export default {
       this.validate();
       if (this.valid) {
         try {
-          await this.$store.dispatch("servidores/saveOrUpdate", { servidor: this.servidor, mode: this.mode });
+          await this.$store.dispatch("servidores/saveOrUpdate", {
+            servidor: this.servidor,
+            mode: this.mode,
+          });
           this.submitted = true;
           this.$emit("savedServidor", {
             codigoError: 0,
-            mensaje: " se ha guardado exitosamente.",            
+            mensaje: " se ha guardado exitosamente.",
           });
-          console.log('no Se llega a ningun error');
+          console.log("no Se llega a ningun error");
           this.reiniciarServidor();
-        } catch (error) {          
-          this.$emit("savedServidor",{
+        } catch (error) {
+          this.$emit("savedServidor", {
             codigoError: 1,
-            mensaje: error.message
+            mensaje: error.message,
           });
         }
       }
@@ -142,7 +159,8 @@ export default {
       return !(this.servidor.nombre === "");
     },
     validIp() {
-      var reg = /\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\b/gi;
+      var reg =
+        /\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\b/gi;
       return reg.test(this.servidor.ip);
     },
   },

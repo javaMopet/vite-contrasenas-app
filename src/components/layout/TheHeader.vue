@@ -2,10 +2,8 @@
   <section class="container-fluid bg-dark">
     <nav
       class="
-            navbar navbar-expand-lg navbar-dark
-            bg-purple-dark
-            navbar-sticky
-          "
+            navbar navbar-expand-lg navbar-dark            
+            navbar-sticky"
     >
       <div class="container-fluid">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -33,7 +31,6 @@
             </li>
             <li class="nav-item dropdown" v-if="isLoggedIn">
               <a
-                href="/Servicios"
                 class="nav-link dropdown-toggle"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
@@ -55,10 +52,7 @@
                     >Empleados</router-link>
                 </li>
               </ul>
-            </li>
-            <!-- <li class="nav-item">
-              <a href="#Collaborate" class="nav-link">Empleados</a>
-            </li> -->
+            </li>            
           </ul>
           <div class="d-flex align-items-center">            
             <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="!isLoggedIn">

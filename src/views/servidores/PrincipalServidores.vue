@@ -1,6 +1,15 @@
 <template>
   <div class="container-lg">
-    <div class="alert alert-success fade show" role="alert" v-if="alertSuccess">
+    <div
+      :class="{
+        alert: alertSuccess,
+        'alert-dismissible':true,
+        'alert-success': true,
+        fade: true,
+        show: alertSuccess,
+      }"
+      role="alert"
+    >
       <svg
         class="bi flex-shrink-0 me-2"
         width="24"
@@ -12,7 +21,16 @@
       </svg>
       <strong>El servidor: </strong> {{ mensajeSuccess }}
     </div>
-    <div class="alert alert-danger fade show" role="alert" v-if="alertError">
+    <div
+      :class="{
+        alert: alertError,
+        'alert-danger': true,
+        'alert-dismissible':true,
+        fade: true,
+        show: alertError,
+      }"
+      role="alert"
+    >
       <svg
         class="bi flex-shrink-0 me-2"
         width="24"
@@ -158,44 +176,19 @@
       aria-labelledby="formTitleLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="formTitleLabel">AgregarServidor</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form-servidor
-              @savedServidor="postSaveServidor"
-              :servidorId="servidorModificar.id"
-              :servidorIndice="servidorModificar.indice"
-              :servidorNombre="servidorModificar.nombre"
-              :servidorIp="servidorModificar.ip"
-            ></form-servidor>
-          </div>
-         <!--  <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-warning"
-              data-bs-dismiss="modal"
-            >
-              Cancelar
-            </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div> -->
-        </div>
-      </div>
+      <form-servidor
+        @savedServidor="postSaveServidor"
+        :servidorId="servidorModificar.id"
+        :servidorIndice="servidorModificar.indice"
+        :servidorNombre="servidorModificar.nombre"
+        :servidorIp="servidorModificar.ip"
+      ></form-servidor>
     </div>
   </div>
 </template>
 <script>
 import FormServidor from "../servidores/FormServidor.vue";
-import Modal from 'bootstrap/js/dist/modal';
+import { Modal } from "bootstrap";
 
 export default {
   data: function () {
@@ -236,16 +229,15 @@ export default {
   },
   methods: {
     postSaveServidor(data) {
-      console.log('postSaveServidor');
-      console.log(data);
-      if (data.codigoError === 0) {        
+      if (data.codigoError === 0) {
         this.mandarAlertaAccionSuccess(data.mensaje);
       } else if (data.codigoError > 0) {
         this.mandarAlertaAccionError(data.mensaje);
       }
-      var myModalEl = document.getElementById('formServidor')
-        var modal = Modal.getInstance(myModalEl)
-        modal.hide();
+      var myModalEl = document.getElementById("formServidor");
+      // var modal = bootstrap.modal.getInstance(myModalEl);
+      var modal = Modal.getInstance(myModalEl);
+      modal.toggle();
     },
     loadServidores() {},
     preDelete(indice, id) {
@@ -296,7 +288,6 @@ export default {
       this.$store.dispatch("servidores/listarServidores");
       this.isLoading = false;
     } catch (error) {
-      console.error(error);
       this.isLoading = false;
     }
   },
