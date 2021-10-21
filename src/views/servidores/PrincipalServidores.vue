@@ -10,6 +10,7 @@
           type="button"
           data-bs-toggle="modal"
           data-bs-target="#formServidor"
+          @click="reiniciarServidorModificar"
         >
           Add
         </button>
@@ -32,9 +33,7 @@
           Lista de servidores
         </caption>
         <thead>
-          <tr>
-            <th scope="col">Id</th>
-            <th scope="col">indice</th>
+          <tr>            
             <th scope="col">Nombre del Servidor</th>
             <th scope="col">Dirección IP</th>
             <th scope="col" width="120px"></th>
@@ -45,14 +44,12 @@
           <tr
             v-for="(servidor, indice) in filteredServidores"
             :key="servidor.id"
-          >
-            <td>{{ servidor.id }}</td>
-            <td>{{ indice }}</td>
+          >            
             <td>{{ servidor.nombre }}</td>
             <td>{{ servidor.ip }}</td>
             <td>
               <button
-                class="btn btn-primary text-ligth me-3 p-1"
+                class="btn btn-outline-primary me-3 p-1"
                 data-bs-toggle="modal"
                 data-bs-target="#formServidor"
                 @click="preUpdate(indice, servidor)"
@@ -61,18 +58,15 @@
               </button>
             </td>
             <td>
-              <a
+              <button
                 role="button"
-                class="control-button"
+                class="btn btn-outline-danger me-3 p-1"
                 data-bs-toggle="modal"
-                data-bs-target="#exampleModal"
+                data-bs-target="#modalConfirm"
                 @click="preDelete(indice, servidor.id)"
-                ><i
-                  class="bi bi-x-octagon"
-                  style="font-size: 14px !important"
-                ></i>
-                Eliminar</a
               >
+                <i class="bi bi-x-octagon"></i>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -85,16 +79,16 @@
     <!-- Modal -->
     <div
       class="modal fade"
-      id="exampleModal"
+      id="modalConfirm"
       data-bs-backdrop="static"
       tabindex="-1"
-      aria-labelledby="exampleModalLabel"
+      aria-labelledby="modalConfirmLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header text-primary">
-            <h5 class="modal-title" id="exampleModalLabel">
+            <h5 class="modal-title" id="modalConfirmLabel">
               Eliminar Servidor
             </h5>
             <button
@@ -189,7 +183,12 @@ export default {
       var modal = Modal.getInstance(myModalEl);
       modal.toggle();
     },
-    loadServidores() {},
+    reiniciarServidorModificar() {
+      this.servidorModificar.indice = null;
+      this.servidorModificar.id = null;
+      this.servidorModificar.nombre = null;
+      this.servidorModificar.ip = null;
+    },
     preDelete(indice, id) {
       this.indice_eliminar = indice;
       this.id_eliminar = id;
@@ -215,22 +214,6 @@ export default {
         this.alert(error.message, "danger");
       }
     },
-    mandarAlertaAccionSuccess(mensaje) {
-      this.saving = true;
-      this.mensajeSuccess = mensaje;
-      this.mensajeError = "";
-      setTimeout(() => {
-        this.saving = null;
-      }, 4000);
-    },
-    mandarAlertaAccionError(mensaje) {
-      this.saving = true;
-      this.mensajeSuccess = "";
-      this.mensajeError = mensaje;
-      setTimeout(() => {
-        this.saving = null;
-      }, 4000);
-    },
     alert(message, type) {
       var alertPlaceholder = document.getElementById("liveAlertPlaceholder");
       var wrapper = document.createElement("div");
@@ -242,10 +225,10 @@ export default {
         '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
 
       alertPlaceholder.append(wrapper);
-      
+
       setTimeout(() => {
         var alertPlaceholder = document.getElementById("liveAlertPlaceholder");
-        alertPlaceholder.innerHTML ='';
+        alertPlaceholder.innerHTML = "";
       }, 3000);
     },
   },
@@ -258,18 +241,4 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
-.control-button {
-  padding: 2px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  color: red;
-  &:hover {
-    background-color: rgba(168, 15, 15, 0.7);
-    color: white;
-    font-weight: bold;
-    border-radius: 6px;
-  }
-}
-</style>
+

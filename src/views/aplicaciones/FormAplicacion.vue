@@ -12,16 +12,16 @@
       </div>
       <form
         class="form-wrap container mt-2"
-        @submit.prevent="saveOrUpdateServidor"
+        @submit.prevent="saveOrUpdateAplicacion"
       >
         <div class="modal-body">
           <div>
             <div class="form-group">
-              <label for="name" class="form-label">Nombre Servidor:</label>
+              <label for="name" class="form-label">Nombre Aplicacion:</label>
               <!-- v-bind:value="nombreProp" -->
               <input
                 id="name"
-                v-model.trim="servidor.nombre"
+                v-model.trim="aplicacion.nombre"
                 v-bind:class="{
                   'form-control': true,
                   'is-invalid': !isNombreValid() && nombreBlured,
@@ -29,21 +29,21 @@
                 v-on:blur="nombreBlured = true"
               />
               <div class="invalid-feedback">
-                Favor de ingresar el nombre del servidor.
+                Favor de ingresar el nombre del aplicacion.
               </div>
             </div>
             <div class="form-group mb-2">
-              <label for="ip">Ip:</label>
+              <label for="version">Version:</label>
               <input
-                v-model="servidor.ip"
+                v-model="aplicacion.version"
                 v-bind:class="{
                   'form-control': true,
-                  'is-invalid': !isIpValid() && ipBlured,
+                  'is-invalid': !isVersionValid() && versionBlured,
                 }"
-                v-on:blur="ipBlured = true"
+                v-on:blur="versionBlured = true"
               />
               <div class="invalid-feedback">
-                Favor de ingresar la ip del servidor.
+                Favor de ingresar la version del aplicacion.
               </div>
             </div>
           </div>
@@ -64,7 +64,7 @@
                 class="btn btn-success me-2"
                 type="button"
                 @click="nuevo"
-                v-if="servidor.id"
+                v-if="aplicacion.id"
               >
                 Nuevo
               </button>
@@ -96,59 +96,59 @@ export default {
   data() {
     return {
       indice: null,
-      servidor: {
+      aplicacion: {
         id: null,
         nombre: null,
-        ip: null,
+        version: null,
       },
       nombreBlured: false,
-      ipBlured: false,
+      versionBlured: false,
     };
   },
   watch: {
-    servidorId(value) {
-      this.servidor.id = value;
-      this.indice = this.servidorIndice;
-      this.servidor.nombre = this.servidorNombre;
-      this.servidor.ip = this.servidorIp;
+    aplicacionId(value) {
+      this.aplicacion.id = value;
+      this.indice = this.aplicacionIndice;
+      this.aplicacion.nombre = this.aplicacionNombre;
+      this.aplicacion.version = this.aplicacionVersion;
     },
   },
   computed: {
     mode() {
-      const mode = this.servidor.id
-        ? this.servidor.id > 0
+      const mode = this.aplicacion.id
+        ? this.aplicacion.id > 0
           ? "Actualizar"
           : "Guardar"
         : "Guardar";
       return mode;
     },
     tituloAccion() {
-      return this.servidor.id
-        ? this.servidor.id > 0
-          ? "Actualizar Servidor"
-          : "Guardar Servidor"
-        : "Guardar Servidor";
+      return this.aplicacion.id
+        ? this.aplicacion.id > 0
+          ? "Actualizar Aplicacion"
+          : "Guardar Aplicacion"
+        : "Guardar Aplicacion";
     },
   },
-  emits: ["savedServidor"],
-  props: ["servidorNombre", "servidorId", "servidorIp", "servidorIndice"],
+  emits: ["savedAplicacion"],
+  props: ["aplicacionNombre", "aplicacionId", "aplicacionVersion", "aplicacionIndice"],
   methods: {
-    async saveOrUpdateServidor() {
+    async saveOrUpdateAplicacion() {
       if (this.validate()) {
         try {
-          await this.$store.dispatch("servidores/saveOrUpdate", {
+          await this.$store.dispatch("aplicaciones/saveOrUpdate", {
             indice: this.indice,
-            servidor: this.servidor,
+            aplicacion: this.aplicacion,
             mode: this.mode,
           });
           this.submitted = true;
-          this.$emit("savedServidor", {
+          this.$emit("savedAplicacion", {
             errorCode: 0,
-            message: "El servidor se ha guardado exitosamente.",
+            message: "El aplicacion se ha guardado exitosamente.",
           });
-          this.reiniciarServidor();
+          this.reiniciarAplicacion();
         } catch (error) {
-          this.$emit("savedServidor", {
+          this.$emit("savedAplicacion", {
             errorCode: 1,
             message: error,
           });
@@ -156,14 +156,14 @@ export default {
       }
     },
     nuevo() {
-      this.reiniciarServidor();
+      this.reiniciarAplicacion();
     },
-    reiniciarServidor() {
+    reiniciarAplicacion() {
       this.indice = null;
-      this.servidor.id = null;
-      this.servidor.nombre = null;
-      this.servidor.ip = null;
-      this.ipBlured = false;
+      this.aplicacion.id = null;
+      this.aplicacion.nombre = null;
+      this.aplicacion.version = null;
+      this.versionBlured = false;
       this.nombreBlured = false;
     },
     validate() {
@@ -173,19 +173,17 @@ export default {
       if (!this.isNombreValid()) {
         formValid = false;
       }
-      this.ipBlured = true;
-      if (!this.isIpValid()) {
+      this.versionBlured = true;
+      if (!this.isVersionValid()) {
         formValid = false;
       }
       return formValid;
     },
     isNombreValid() {
-      return this.servidor.nombre && this.servidor.nombre != "";
+      return this.aplicacion.nombre && this.aplicacion.nombre != "";
     },
-    isIpValid() {
-      var reg =
-        /\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\b/gi;
-      return reg.test(this.servidor.ip);
+    isVersionValid() {
+      return this.aplicacion.version && this.aplicacion.version != "";
     },
   },
 };

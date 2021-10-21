@@ -4,6 +4,7 @@ import authModule from './modules/auth/index.js'
 import servidoresModule from './modules/servidores/index.js'
 import empleadosModule from './modules/empleados/index.js'
 import aplicacionesModule from './modules/aplicaciones/index.js'
+import serviciosModule from './modules/servicios'
 
 export default createStore({
   state: {
@@ -16,6 +17,7 @@ export default createStore({
     auth: authModule,
     servidores: servidoresModule,
     empleados: empleadosModule,
-    aplicaciones: aplicacionesModule
+    aplicaciones: aplicacionesModule,
+    servicios: serviciosModule
   }
 })

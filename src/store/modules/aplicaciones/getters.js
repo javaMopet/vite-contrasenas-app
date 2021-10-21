@@ -1,8 +1,8 @@
 export default {
-    aplicacionesList(state){
-        return state.aplicacionesList;
+    aplicaciones(state){
+        return state.aplicaciones;
     },
     hasAplicaciones(state){
-        return state.aplicacionesList  && state.aplicacionesList.length > 0;
+        return state.aplicaciones  && state.aplicaciones.length > 0;
     }
 }

@@ -1,17 +1,17 @@
 export default {
     saveOrUpdate(state,payload){
         if(payload.mode === 'Guardar'){
-            state.aplicaciones.push(payload.aplicacion);
+            state.servicios.push(payload.servicio);
         }else if(payload.mode === 'Actualizar'){
             console.log("Actualizando listado en el indice: " + payload.indice);
-            state.aplicaciones.splice(payload.indice,1,payload.aplicacion);
+            state.servicios.splice(payload.indice,1,payload.servicio);
         }        
     },
-    addAplicaciones(state, payload){
-        state.aplicaciones = payload;
+    addServicios(state, payload){
+        state.servicios = payload;
     },
-    spliceAplicacion(state, payload){
+    spliceServicio(state, payload){
         const indice = payload.indice;        
-        state.aplicaciones.splice(indice, 1);
+        state.servicios.splice(indice, 1);
     }
 }

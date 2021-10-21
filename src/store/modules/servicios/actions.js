@@ -1,10 +1,10 @@
 import axios from "axios";
 import router from "../../../router/index.js";
-const host = "http://localhost:3000/aplicaciones/";
+const host = "http://localhost:3000/servicios/";
 
 export default {
-  async listarAplicaciones(context) {
-    console.log('listando aplicaciones')
+  async listarServicios(context) {
+    console.log('listando Servicios')
     await axios
       .get(host, {
         headers: {
@@ -13,7 +13,7 @@ export default {
         },
       })
       .then((response) => {
-        context.commit("addAplicaciones", getResults(response.data));
+        context.commit("addServicios", getResults(response.data));
       })
       .catch(function (error) {
         // handle error        
@@ -28,10 +28,10 @@ export default {
     var url = host;
     if (payload.mode === "Guardar") {
       method = "POST";
-      payload.aplicacion.empleado_id = context.rootGetters.empleadoId;
+      payload.servicio.empleado_id = context.rootGetters.empleadoId;
     } else if (payload.mode === "Actualizar") {
       method = "PUT";
-      url = url + payload.aplicacion.id
+      url = url + payload.servicio.id
     }    
     await axios({
       method: method,
@@ -40,11 +40,11 @@ export default {
         'Content-type': 'application/json',
         Authorization: "Bearer " + context.rootGetters.token,
       },
-      data: JSON.stringify(payload.aplicacion),
+      data: JSON.stringify(payload.servicio),
     }).then((response) => {      
       const responseData = response.data.data;   
       console.log(responseData);
-      const aplicacionResponse = {
+      const servicioResponse = {
         id: responseData.attributes.id,
         nombre: responseData.attributes.nombre,
         version: responseData.attributes.version,
@@ -52,7 +52,7 @@ export default {
       context.commit("saveOrUpdate", {
         mode: payload.mode,
         indice: payload.indice,
-        aplicacion: aplicacionResponse
+        servicio: servicioResponse
       });
     }).catch(function (error) {
       console.log("error en saveOrUpdate");
@@ -64,16 +64,16 @@ export default {
   },
   requestDelete(context, payload) {
     const indice = payload.indice;
-    const aplicacionId = payload.aplicacion.id;
+    const servicioId = payload.servicio.id;
 
-    fetch(host + aplicacionId, {
+    fetch(host + servicioId, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + context.rootGetters.token,
       },
     }).then((response) => {
       if (response.ok) {
-        context.commit("spliceAplicacion", {
+        context.commit("spliceservicio", {
           indice: indice,
         });
       }
@@ -84,11 +84,13 @@ export default {
 const getResults = (response) => {  
   const responseData = response.data;  
   const results = [];
+  console.log(responseData);
   for (const id in responseData) {
-    results.push({
+    results.push({      
       id: responseData[id].attributes.id,
-      nombre: responseData[id].attributes.nombre,
-      version: responseData[id].attributes.version,
+      nombreServidor: responseData[id].attributes.servidor.nombre,
+      nombreAplicacion:responseData[id].attributes.aplicacion.nombre,
+      puerto: responseData[id].attributes.puerto,
     });
   }  
   return results;
@@ -105,9 +107,9 @@ const tratarError = (error, context) => {
     }
   } else if (error.request) {
     if (error.request.timeout === 0 && error.request.status === 0) {
-      throw new Error("No hay conexion al aplicacion de datos.");
+      throw new Error("No hay conexion al servicio de datos.");
     }
-    throw new Error("No es posible realizar la petición al aplicacion");
+    throw new Error("No es posible realizar la petición al servicio");
   } else {
     // Something happened in setting up the request that triggered an Error    
   }

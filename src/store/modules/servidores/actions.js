@@ -79,38 +79,6 @@ export default {
         console.info("then");
       });
   },
-  // async saveOrUpdate(context, payload) {
-  //   var method = "";
-  //   if (payload.mode === "Guardar") {
-  //     method = "POST";
-  //     payload.servidor.empleado_id = context.rootGetters.empleadoId;
-  //   } else if (payload.mode === "Actualizar") {
-  //     method = "PUT";
-  //   }
-
-  //   // THIS IS WHERE YOU SUBMIT DATA TO SERVER
-  //   const httpResponse = await fetch(host, {
-  //     method: method,
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: "Bearer " + context.rootGetters.token,
-  //     },
-  //     body: JSON.stringify(payload),
-  //   });
-
-  //   const responseData = await httpResponse.json();
-
-  //   if (!httpResponse.ok) {
-  //     statusResponseError(httpResponse, responseData, context);
-  //   } else {
-  //     const servidorCreado = {
-  //       id: responseData.data.id,
-  //       nombre: responseData.data.attributes.nombre,
-  //       ip: responseData.data.attributes.ip,
-  //     };
-  //     context.commit("addServidor", servidorCreado);
-  //   }
-  // },
   async saveOrUpdate(context, payload) {
     console.log("save or update from actions servidores...");
     var method = "";

@@ -6,8 +6,7 @@ export default {
   namespaced:true,
   state() {
     return {
-      listaServidores:[],
-      
+      servidores:[]      
     };
   },
   mutations,

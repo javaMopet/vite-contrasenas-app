@@ -2,7 +2,9 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-primary" id="formTitleLabel">{{ tituloAccion }}</h5>
+        <h5 class="modal-title text-primary" id="formTitleLabel">
+          {{ tituloAccion }}
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -12,16 +14,16 @@
       </div>
       <form
         class="form-wrap container mt-2"
-        @submit.prevent="saveOrUpdateServidor"
+        @submit.prevent="saveOrUpdateServicio"
       >
         <div class="modal-body">
           <div>
             <div class="form-group">
-              <label for="name" class="form-label">Nombre Servidor:</label>
+              <label for="name" class="form-label">Servidor:</label>
               <!-- v-bind:value="nombreProp" -->
               <input
                 id="name"
-                v-model.trim="servidor.nombre"
+                v-model.trim="servicio.nombre"
                 v-bind:class="{
                   'form-control': true,
                   'is-invalid': !isNombreValid() && nombreBlured,
@@ -29,21 +31,35 @@
                 v-on:blur="nombreBlured = true"
               />
               <div class="invalid-feedback">
-                Favor de ingresar el nombre del servidor.
+                Favor de ingresar el nombre del servicio.
               </div>
             </div>
             <div class="form-group mb-2">
-              <label for="ip">Ip:</label>
+              <label for="version">Aplicacion:</label>
               <input
-                v-model="servidor.ip"
+                v-model="servicio.version"
                 v-bind:class="{
                   'form-control': true,
-                  'is-invalid': !isIpValid() && ipBlured,
+                  'is-invalid': !isVersionValid() && versionBlured,
                 }"
-                v-on:blur="ipBlured = true"
+                v-on:blur="versionBlured = true"
               />
               <div class="invalid-feedback">
-                Favor de ingresar la ip del servidor.
+                Favor de ingresar la version del servicio.
+              </div>
+            </div>
+            <div class="form-group mb-2">
+              <label for="version">Puerto:</label>
+              <input type="number"
+                v-model="servicio.puerto"
+                v-bind:class="{
+                  'form-control': true,
+                  'is-invalid': !isVersionValid() && versionBlured,
+                }"
+                v-on:blur="versionBlured = true"
+              />
+              <div class="invalid-feedback">
+                Favor de ingresar la version del servicio.
               </div>
             </div>
           </div>
@@ -64,7 +80,7 @@
                 class="btn btn-success me-2"
                 type="button"
                 @click="nuevo"
-                v-if="servidor.id"
+                v-if="servicio.id"
               >
                 Nuevo
               </button>
@@ -96,59 +112,59 @@ export default {
   data() {
     return {
       indice: null,
-      servidor: {
+      servicio: {
         id: null,
         nombre: null,
-        ip: null,
+        version: null,
       },
       nombreBlured: false,
-      ipBlured: false,
+      versionBlured: false,
     };
   },
   watch: {
-    servidorId(value) {
-      this.servidor.id = value;
-      this.indice = this.servidorIndice;
-      this.servidor.nombre = this.servidorNombre;
-      this.servidor.ip = this.servidorIp;
+    servicioId(value) {
+      this.servicio.id = value;
+      this.indice = this.servicioIndice;
+      this.servicio.nombre = this.servicioNombre;
+      this.servicio.version = this.servicioVersion;
     },
   },
   computed: {
     mode() {
-      const mode = this.servidor.id
-        ? this.servidor.id > 0
+      const mode = this.servicio.id
+        ? this.servicio.id > 0
           ? "Actualizar"
           : "Guardar"
         : "Guardar";
       return mode;
     },
     tituloAccion() {
-      return this.servidor.id
-        ? this.servidor.id > 0
-          ? "Actualizar Servidor"
-          : "Guardar Servidor"
-        : "Guardar Servidor";
+      return this.servicio.id
+        ? this.servicio.id > 0
+          ? "Actualizar Servicio"
+          : "Guardar Servicio"
+        : "Guardar Servicio";
     },
   },
-  emits: ["savedServidor"],
-  props: ["servidorNombre", "servidorId", "servidorIp", "servidorIndice"],
+  emits: ["savedServicio"],
+  props: ["servicioNombre", "servicioId", "servicioVersion", "servicioIndice"],
   methods: {
-    async saveOrUpdateServidor() {
+    async saveOrUpdateServicio() {
       if (this.validate()) {
         try {
-          await this.$store.dispatch("servidores/saveOrUpdate", {
+          await this.$store.dispatch("servicios/saveOrUpdate", {
             indice: this.indice,
-            servidor: this.servidor,
+            servicio: this.servicio,
             mode: this.mode,
           });
           this.submitted = true;
-          this.$emit("savedServidor", {
+          this.$emit("savedServicio", {
             errorCode: 0,
-            message: "El servidor se ha guardado exitosamente.",
+            message: "El servicio se ha guardado exitosamente.",
           });
-          this.reiniciarServidor();
+          this.reiniciarServicio();
         } catch (error) {
-          this.$emit("savedServidor", {
+          this.$emit("savedServicio", {
             errorCode: 1,
             message: error,
           });
@@ -156,14 +172,14 @@ export default {
       }
     },
     nuevo() {
-      this.reiniciarServidor();
+      this.reiniciarServicio();
     },
-    reiniciarServidor() {
+    reiniciarServicio() {
       this.indice = null;
-      this.servidor.id = null;
-      this.servidor.nombre = null;
-      this.servidor.ip = null;
-      this.ipBlured = false;
+      this.servicio.id = null;
+      this.servicio.nombre = null;
+      this.servicio.version = null;
+      this.versionBlured = false;
       this.nombreBlured = false;
     },
     validate() {
@@ -173,19 +189,17 @@ export default {
       if (!this.isNombreValid()) {
         formValid = false;
       }
-      this.ipBlured = true;
-      if (!this.isIpValid()) {
+      this.versionBlured = true;
+      if (!this.isVersionValid()) {
         formValid = false;
       }
       return formValid;
     },
     isNombreValid() {
-      return this.servidor.nombre && this.servidor.nombre != "";
+      return this.servicio.nombre && this.servicio.nombre != "";
     },
-    isIpValid() {
-      var reg =
-        /\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\b/gi;
-      return reg.test(this.servidor.ip);
+    isVersionValid() {
+      return this.servicio.version && this.servicio.version != "";
     },
   },
 };
