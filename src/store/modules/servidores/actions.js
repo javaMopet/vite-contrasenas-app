@@ -10,8 +10,8 @@ const thenResponse = (response, context) => {
     statusResponseError(response, response.json(), context);
   }
 };
-const statusResponseError = (httpResponse, responseData, context) => {  
-  if (httpResponse.status === 403) {    
+const statusResponseError = (httpResponse, responseData, context) => {
+  if (httpResponse.status === 403) {
     context.dispatch("logout", "", { root: true }); //Se especifica que la accion es del módulo root
     router.replace("/auth/login?sessionExpired=true");
     return;
@@ -35,15 +35,15 @@ const tratarError = (error, context) => {
       context.dispatch("logout", "", { root: true }); //Se especifica que la accion es del módulo root
       router.replace("/auth/login?sessionExpired=true");
       return;
-    }            
+    }
   } else if (error.request) {
     if (error.request.timeout === 0 && error.request.status === 0) {
       throw new Error("No hay conexion al servidor de datos.");
-    }    
+    }
     throw new Error("No es posible realizar la petición al servidor");
   } else {
-        // Something happened in setting up the request that triggered an Error    
-  }  
+    // Something happened in setting up the request that triggered an Error    
+  }
 };
 
 const getResults = (response) => {
@@ -60,33 +60,7 @@ const getResults = (response) => {
 };
 
 export default {
-  // listarServidores(context) {
-  //   // fetch(host, {
-  //   //   method: "GET",
-  //   //   headers: {
-  //   //     "Content-Type": "application/json",
-  //   //     Authorization: "Bearer " + context.rootGetters.token,
-  //   //   },
-  //   // })
-  //   context.dispatch("apiRest", {
-  //     host: host,
-  //     methodRequest: 'GET',
-  //     authorization:true
-  //   }, { root: true })
-  //   .then((response) => {
-  //     return thenResponse(response, context);
-  //   }).then((response) => {
-  //     if (response) {
-  //       context.commit("addServidores", getResults(response));
-  //     } else {
-  //       throw new Error('Failed to fetch data - plase try again later')
-  //     }
-  //   }).catch((error) => {
-  //     this.isLoading = false;
-  //     throw new Error(error.message)
-  //   });
-  // },
-  async listarServidores(context) {    
+  async listarServidores(context) {
     await axios
       .get(host, {
         headers: {
@@ -94,7 +68,7 @@ export default {
           Authorization: "Bearer " + context.rootGetters.token,
         },
       })
-      .then((response) => {  
+      .then((response) => {
         context.commit("addServidores", getResults(response.data));
       })
       .catch(function (error) {
@@ -105,37 +79,97 @@ export default {
         console.info("then");
       });
   },
+  // async saveOrUpdate(context, payload) {
+  //   var method = "";
+  //   if (payload.mode === "Guardar") {
+  //     method = "POST";
+  //     payload.servidor.empleado_id = context.rootGetters.empleadoId;
+  //   } else if (payload.mode === "Actualizar") {
+  //     method = "PUT";
+  //   }
+
+  //   // THIS IS WHERE YOU SUBMIT DATA TO SERVER
+  //   const httpResponse = await fetch(host, {
+  //     method: method,
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: "Bearer " + context.rootGetters.token,
+  //     },
+  //     body: JSON.stringify(payload),
+  //   });
+
+  //   const responseData = await httpResponse.json();
+
+  //   if (!httpResponse.ok) {
+  //     statusResponseError(httpResponse, responseData, context);
+  //   } else {
+  //     const servidorCreado = {
+  //       id: responseData.data.id,
+  //       nombre: responseData.data.attributes.nombre,
+  //       ip: responseData.data.attributes.ip,
+  //     };
+  //     context.commit("addServidor", servidorCreado);
+  //   }
+  // },
   async saveOrUpdate(context, payload) {
+    console.log("save or update from actions servidores...");
     var method = "";
+    var url = host;
     if (payload.mode === "Guardar") {
       method = "POST";
       payload.servidor.empleado_id = context.rootGetters.empleadoId;
     } else if (payload.mode === "Actualizar") {
       method = "PUT";
+      url = url + payload.servidor.id
     }
+    console.log(url);
 
+    console.log(payload.servidor);
     // THIS IS WHERE YOU SUBMIT DATA TO SERVER
-    const httpResponse = await fetch(host, {
+    await axios({
       method: method,
+      url: url,
       headers: {
-        "Content-Type": "application/json",
+        'Content-type': 'application/json',
         Authorization: "Bearer " + context.rootGetters.token,
       },
-      body: JSON.stringify(payload),
+      data: JSON.stringify(payload.servidor),
+    }).then((response) => {
+      console.log("Respondido correctamente");      
+      const responseData = response.data.data;   
+      console.log(responseData);
+      const servidorResponse = {
+        id: responseData.attributes.id,
+        nombre: responseData.attributes.nombre,
+        ip: responseData.attributes.ip,
+      };
+      console.log("indice en saver or update actions");
+      console.log(payload.indice);
+      context.commit("saveOrUpdate", {
+        mode: payload.mode,
+        indice: payload.indice,
+        servidor: servidorResponse
+      });
+    }).catch(function (error) {
+      console.log("error en saveOrUpdate");
+      console.log(error);
+      tratarError(error, context);
+    }).then(function () {
+      console.info("then save or update");
     });
 
-    const responseData = await httpResponse.json();
+    // const responseData = await httpResponse.json();
 
-    if (!httpResponse.ok) {
-      statusResponseError(httpResponse, responseData, context);
-    } else {
-      const servidorCreado = {
-        id: responseData.data.id,
-        nombre: responseData.data.attributes.nombre,
-        ip: responseData.data.attributes.ip,
-      };
-      context.commit("addServidor", servidorCreado);
-    }
+    // if (!httpResponse.ok) {
+    //   statusResponseError(httpResponse, responseData, context);
+    // } else {
+    //   const servidorCreado = {
+    //     id: responseData.data.id,
+    //     nombre: responseData.data.attributes.nombre,
+    //     ip: responseData.data.attributes.ip,
+    //   };
+    //   context.commit("addServidor", servidorCreado);
+    // }
   },
   requestDelete(context, payload) {
     const indice = payload.indice;

@@ -53,6 +53,8 @@
             <td>
               <button
                 class="btn btn-primary text-ligth me-3 p-1"
+                data-bs-toggle="modal"
+                data-bs-target="#formServidor"
                 @click="preUpdate(indice, servidor)"
               >
                 <i class="bi bi-pencil"></i>
@@ -147,7 +149,7 @@
 </template>
 <script>
 import FormServidor from "../servidores/FormServidor.vue";
-import { Modal } from "bootstrap";
+import { Modal, Alert } from "bootstrap";
 
 export default {
   data: function () {
@@ -184,7 +186,6 @@ export default {
         this.alert(data.message, "danger");
       }
       var myModalEl = document.getElementById("formServidor");
-      // var modal = bootstrap.modal.getInstance(myModalEl);
       var modal = Modal.getInstance(myModalEl);
       modal.toggle();
     },
@@ -209,9 +210,9 @@ export default {
             id: this.id_eliminar,
           },
         });
-        this.mandarAlertaAccionSuccess("se ha eliminado correctamente.");
+        this.alert("Servidor eliminado.", "success");
       } catch (error) {
-        this.mandarAlertaAccionError(error.message);
+        this.alert(error.message, "danger");
       }
     },
     mandarAlertaAccionSuccess(mensaje) {
@@ -236,11 +237,16 @@ export default {
       wrapper.innerHTML =
         '<div class="alert alert-' +
         type +
-        ' alert-dismissible" role="alert">' +
+        ' alert-dismissible fade show" role="alert">' +
         message +
         '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
 
       alertPlaceholder.append(wrapper);
+      
+      setTimeout(() => {
+        var alertPlaceholder = document.getElementById("liveAlertPlaceholder");
+        alertPlaceholder.innerHTML ='';
+      }, 3000);
     },
   },
   async mounted() {

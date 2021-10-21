@@ -18,16 +18,16 @@
           <div>
             <div class="form-group">
               <label for="name" class="form-label"
-                >Nombre Servidor: {{ servidor.indice }} -
+                >Nombre Servidor: {{ indice }} -
                 {{ servidor.id }}</label
               >
               <!-- v-bind:value="nombreProp" -->
               <input
                 id="name"
-                v-model="servidor.nombre"
+                v-model.trim="servidor.nombre"
                 v-bind:class="{
                   'form-control': true,
-                  'is-invalid': !validNombre() && nombreBlured,
+                  'is-invalid': !isNombreValid() && nombreBlured,
                 }"
                 v-on:blur="nombreBlured = true"
               />
@@ -41,7 +41,7 @@
                 v-model="servidor.ip"
                 v-bind:class="{
                   'form-control': true,
-                  'is-invalid': !validIp() && ipBlured,
+                  'is-invalid': !isIpValid() && ipBlured,
                 }"
                 v-on:blur="ipBlured = true"
               />
@@ -77,8 +77,8 @@
 export default {
   data() {
     return {
+      indice: null,
       servidor: {
-        indice: null,
         id: null,
         nombre: null,
         ip: null,
@@ -90,7 +90,7 @@ export default {
   watch: {
     servidorId(value) {
       this.servidor.id = value;
-      this.servidor.indice = this.servidorIndice;
+      this.indice = this.servidorIndice;
       this.servidor.nombre = this.servidorNombre;
       this.servidor.ip = this.servidorIp;
     },
@@ -103,16 +103,16 @@ export default {
           : "Guardar"
         : "Guardar";
       return mode;
-    },
+    }
   },
   emits: ["savedServidor"],
   props: ["servidorNombre", "servidorId", "servidorIp", "servidorIndice"],
   methods: {
     async saveOrUpdateServidor() {
-      this.validate();
-      if (this.valid) {
+      if (this.validate()) {
         try {
           await this.$store.dispatch("servidores/saveOrUpdate", {
+            indice: this.indice,
             servidor: this.servidor,
             mode: this.mode,
           });
@@ -131,37 +131,37 @@ export default {
       }
     },
     nuevo() {
-      this.servidor.indice = null;
-      this.servidor.id = null;
-      this.servidor.nombre = null;
-      this.servidor.ip = null;
+      this.reiniciarServidor();
     },
     reiniciarServidor() {
+      this.indice = null;
       this.servidor.id = null;
       this.servidor.nombre = null;
       this.servidor.ip = null;
       this.ipBlured = false;
+      this.nombreBlured = false;
     },
-    validate() {
-      this.emailBlured = true;
-      this.valid = true;
+    validate() {      
+      var formValid = true;
+      
       this.nombreBlured = true;
-      if (!this.validNombre()) {
-        this.valid = false;
+      if (!this.isNombreValid()) {
+        formValid = false;
       }
       this.ipBlured = true;
-      if (!this.validIp()) {
-        this.valid = false;
-      }
+      if (!this.isIpValid()) {
+        formValid = false;
+      }      
+      return formValid;
     },
-    validNombre() {
-      return !(this.servidor.nombre === "");
+    isNombreValid() {            
+      return (this.servidor.nombre && this.servidor.nombre != "");
     },
-    validIp() {
+    isIpValid() {
       var reg =
         /\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\b/gi;
       return reg.test(this.servidor.ip);
-    },
+    }
   },
 };
 </script>
