@@ -91,6 +91,7 @@ const getResults = (response) => {
       version: responseData[id].attributes.version,
     });
   }  
+  // console.log(results);
   return results;
 };
 

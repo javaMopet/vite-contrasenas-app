@@ -16,14 +16,17 @@ export default {
         context.commit("addServicios", getResults(response.data));
       })
       .catch(function (error) {
-        // handle error        
+        console.log(error.toJSON());
         tratarError(error, context);
       })
-      .then(function () {
-        console.info("then");
-      });
+      // .then(function () {
+      //   console.info("then");
+      // });
   }, 
-  async saveOrUpdate(context, payload) {    
+  async saveOrUpdate(context, payload) {
+    console.log("Guardando.....")
+    console.log(payload);
+    console.log(payload.servicio);
     var method = "";
     var url = host;
     if (payload.mode === "Guardar") {
@@ -46,8 +49,11 @@ export default {
       console.log(responseData);
       const servicioResponse = {
         id: responseData.attributes.id,
-        nombre: responseData.attributes.nombre,
-        version: responseData.attributes.version,
+        servidorId: responseData.attributes.servidor.id,
+        nombreServidor: responseData.attributes.servidor.nombre,
+        aplicacionId: responseData.attributes.aplicacion.id,
+        nombreAplicacion: responseData.attributes.aplicacion.nombre,
+        puerto: responseData.attributes.puerto
       };      
       context.commit("saveOrUpdate", {
         mode: payload.mode,
@@ -73,12 +79,15 @@ export default {
       },
     }).then((response) => {
       if (response.ok) {
-        context.commit("spliceservicio", {
+        context.commit("spliceServicio", {
           indice: indice,
         });
       }
     });
   },
+  resetServicios(context,payload){
+    context.commit("addServicios",[]);
+  }
 };
 
 const getResults = (response) => {  
@@ -88,7 +97,9 @@ const getResults = (response) => {
   for (const id in responseData) {
     results.push({      
       id: responseData[id].attributes.id,
+      servidorId: responseData[id].attributes.servidor.id,
       nombreServidor: responseData[id].attributes.servidor.nombre,
+      aplicacionId: responseData[id].attributes.aplicacion.id,
       nombreAplicacion:responseData[id].attributes.aplicacion.nombre,
       puerto: responseData[id].attributes.puerto,
     });
@@ -105,6 +116,8 @@ const tratarError = (error, context) => {
       router.replace("/auth/login?sessionExpired=true");
       return;
     }
+    console.log(error);
+    throw new Error('error desconocido');
   } else if (error.request) {
     if (error.request.timeout === 0 && error.request.status === 0) {
       throw new Error("No hay conexion al servicio de datos.");

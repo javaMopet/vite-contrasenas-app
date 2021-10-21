@@ -6,34 +6,22 @@
     <div class="container-fluid mt-4 p-0">
       <div class="container-fluid p-0 my-1">
         <button
-          class="btn btn-outline-success"
+          class="btn btn-outline-dark"
           type="button"
           data-bs-toggle="modal"
           data-bs-target="#formServicio"
-          @click="reiniciarServicioModificar"
+          @click="addNew"
         >
           Add
         </button>
       </div>
-      <div class="d-flex align-items-center text-info" v-if="isLoading">
-        <strong>Loading...</strong>
-        <div
-          class="spinner-grow ml-auto"
-          role="status"
-          aria-hidden="true"
-        ></div>
-      </div>
-      <table
-        class="table table-sm table-light"
-        v-else-if="
-          !isLoading && filteredServicios && filteredServicios.length > 0
-        "
-      >
+      <!-- v-else-if="          !isLoading && filteredServicios && filteredServicios.length > 0        " -->
+      <table class="table table-sm table-dark">
         <caption>
           Lista de servicios
         </caption>
         <thead>
-          <tr>            
+          <tr>
             <th scope="col">Nombre del Servidor</th>
             <th scope="col">Nombre de la aplicación</th>
             <th scope="col">Puerto</th>
@@ -45,7 +33,7 @@
           <tr
             v-for="(servicio, indice) in filteredServicios"
             :key="servicio.id"
-          >            
+          >
             <td>{{ servicio.nombreServidor }}</td>
             <td>{{ servicio.nombreAplicacion }}</td>
             <td>{{ servicio.puerto }}</td>
@@ -73,9 +61,9 @@
           </tr>
         </tbody>
       </table>
-      <div class="text-dark d-flex align-items-center" v-else>
+      <!-- <div class="text-dark d-flex align-items-center">
         No se ha registrado ningun servicio. Comienza agregando servicios.
-      </div>
+      </div> -->
     </div>
 
     <!-- Modal -->
@@ -134,10 +122,11 @@
       >
         <form-servicio
           @savedServicio="postSaveServicio"
-          :aplicacionId="aplicacionModificar.id"
-          :aplicacionIndice="aplicacionModificar.indice"
-          :aplicacionNombre="aplicacionModificar.nombre"
-          :aplicacionVersion="aplicacionModificar.version"
+          :servicioId="servicioModificar.id"
+          :servicioIndice="servicioModificar.indice"
+          :servicioServidorId="servicioModificar.servidorId"
+          :servicioAplicacionId="servicioModificar.aplicacionId"
+          :servicioPuerto="servicioModificar.puerto"
         ></form-servicio>
       </div>
     </teleport>
@@ -149,18 +138,18 @@ import { Modal, Alert } from "bootstrap";
 
 export default {
   data: function () {
-    return {
-      isLoading: false,
+    return {      
       error: null,
       saving: null,
       mensajeError: "",
       indice_eliminar: null,
       id_eliminar: null,
-      aplicacionModificar: {
+      servicioModificar: {
         indice: null,
         id: null,
-        nombre: null,
-        version: null,
+        servidorId: null,
+        aplicacionId: null,
+        puerto: null,
       },
       // servicios: [],
     };
@@ -185,22 +174,30 @@ export default {
       var modal = Modal.getInstance(myModalEl);
       modal.toggle();
     },
-    reiniciarServicioModificar() {
-      this.aplicacionModificar.indice = null;
-      this.aplicacionModificar.id = null;
-      this.aplicacionModificar.nombre = null;
-      this.aplicacionModificar.version = null;
+    addNew() {
+      try {
+        this.servicioModificar.indice = null;
+        this.servicioModificar.id = null;
+        this.servicioModificar.servidorId = null;
+        this.servicioModificar.aplicacionId = null;
+      } catch (error) {
+        this.alert(error || "Error desconocido.", "danger");
+      }
     },
     preDelete(indice, id) {
+      console.log(indice);
+      console.log(id);
+
       this.indice_eliminar = indice;
       this.id_eliminar = id;
     },
     preUpdate(indice, servicio) {
-      this.aplicacionModificar = {
+      this.servicioModificar = {
         id: servicio.id,
         indice: indice,
-        nombre: servicio.nombre,
-        version: servicio.version,
+        servidorId: servicio.servidorId,
+        aplicacionId: servicio.aplicacionId,
+        puerto: servicio.puerto,
       };
     },
     eliminarServicio() {
@@ -234,9 +231,11 @@ export default {
       }, 3000);
     },
   },
-  async mounted() {
+  mounted() {
     try {
-      await this.$store.dispatch("servicios/listarServicios");
+      this.$store.dispatch("servicios/resetServicios");
+      this.$store.dispatch("servicios/listarServicios");
+      console.log("Despues de obtener el listado de servicios");
     } catch (error) {
       this.alert(error || "Error desconocido.", "danger");
     }

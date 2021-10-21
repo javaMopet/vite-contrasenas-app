@@ -247,7 +247,7 @@ export default {
       }
       try {
         await this.$store.dispatch("auth", payload);
-        this.$router.replace("/servidores");
+        this.$router.replace("/servicios");
         this.ingresando = false;
         this.registrandoEmpleado = false;
       } catch (err) {

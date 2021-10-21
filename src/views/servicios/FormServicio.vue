@@ -19,44 +19,63 @@
         <div class="modal-body">
           <div>
             <div class="form-group">
-              <label for="name" class="form-label">Servidor:</label>
-              <!-- v-bind:value="nombreProp" -->
-              <input
-                id="name"
-                v-model.trim="servicio.nombre"
-                v-bind:class="{
-                  'form-control': true,
-                  'is-invalid': !isNombreValid() && nombreBlured,
-                }"
-                v-on:blur="nombreBlured = true"
-              />
+              <label for="servidor" class="form-label">Servidor:</label>              
+              <select
+                name="servidor"
+                class="form-select"
+                aria-labelledby="Seleccionar el servidor"
+                required
+                v-model="servicio.servidor_id"
+              >
+                <option value="" disabled selected>
+                  -- Selecciona el servidor --
+                </option>
+                <option
+                  v-for="servidor in filteredServidores"
+                  :key="servidor.id"
+                  :value="servidor.id"
+                >
+                  {{ servidor.nombre }}
+                </option>
+              </select>
               <div class="invalid-feedback">
-                Favor de ingresar el nombre del servicio.
+                Favor de ingresar el nombre del servidor.
               </div>
             </div>
             <div class="form-group mb-2">
               <label for="version">Aplicacion:</label>
-              <input
-                v-model="servicio.version"
-                v-bind:class="{
-                  'form-control': true,
-                  'is-invalid': !isVersionValid() && versionBlured,
-                }"
-                v-on:blur="versionBlured = true"
-              />
+              <select
+                name="aplicacion"
+                class="form-select"
+                aria-labelledby="Seleccionar la aplicacion"
+                required
+                v-model="servicio.aplicacion_id"
+              >
+                <option value="" disabled selected>
+                  -- Selecciona la aplicación --
+                </option>
+                <option
+                  v-for="aplicacion in filteredAplicaciones"
+                  :key="aplicacion.id"
+                  :value="aplicacion.id"
+                >
+                  {{ aplicacion.nombre }} v.{{ aplicacion.version }}
+                </option>
+              </select>
               <div class="invalid-feedback">
-                Favor de ingresar la version del servicio.
+                Favor de ingresar la aplicació.
               </div>
             </div>
             <div class="form-group mb-2">
               <label for="version">Puerto:</label>
-              <input type="number"
+              <input
+                type="number"
                 v-model="servicio.puerto"
                 v-bind:class="{
                   'form-control': true,
-                  'is-invalid': !isVersionValid() && versionBlured,
+                  'is-invalid': !isPuertoValid() && puertoBlured,
                 }"
-                v-on:blur="versionBlured = true"
+                v-on:blur="puertoBlured = true"
               />
               <div class="invalid-feedback">
                 Favor de ingresar la version del servicio.
@@ -114,19 +133,20 @@ export default {
       indice: null,
       servicio: {
         id: null,
-        nombre: null,
-        version: null,
-      },
-      nombreBlured: false,
-      versionBlured: false,
+        servidor_id: null,
+        aplicacion_id: null,
+        puerto: null,
+      },      
+      puertoBlured: false,
     };
   },
   watch: {
     servicioId(value) {
       this.servicio.id = value;
       this.indice = this.servicioIndice;
-      this.servicio.nombre = this.servicioNombre;
-      this.servicio.version = this.servicioVersion;
+      this.servicio.servidor_id = this.servicioServidorId;
+      this.servicio.aplicacion_id = this.servicioAplicacionId;
+      this.servicio.puerto = this.servicioPuerto
     },
   },
   computed: {
@@ -145,9 +165,15 @@ export default {
           : "Guardar Servicio"
         : "Guardar Servicio";
     },
+    filteredServidores() {
+      return this.$store.getters["servidores/servidores"];
+    },
+    filteredAplicaciones() {
+      return this.$store.getters["aplicaciones/aplicaciones"];
+    },
   },
   emits: ["savedServicio"],
-  props: ["servicioNombre", "servicioId", "servicioVersion", "servicioIndice"],
+  props: ["servicioId", "servicioIndice","servicioServidorId","servicioAplicacionId", "servicioPuerto"],
   methods: {
     async saveOrUpdateServicio() {
       if (this.validate()) {
@@ -177,30 +203,30 @@ export default {
     reiniciarServicio() {
       this.indice = null;
       this.servicio.id = null;
-      this.servicio.nombre = null;
-      this.servicio.version = null;
-      this.versionBlured = false;
-      this.nombreBlured = false;
+      this.servicio.servidor_id = null;
+      this.servicio.aplicacion_id = null;
+      this.servicio.puerto = null;
+      this.puertoBlured = false;      
     },
     validate() {
       var formValid = true;
-
-      this.nombreBlured = true;
-      if (!this.isNombreValid()) {
-        formValid = false;
-      }
-      this.versionBlured = true;
-      if (!this.isVersionValid()) {
+      this.puertoBlured = true;
+      if (!this.isPuertoValid()) {
         formValid = false;
       }
       return formValid;
+    },    
+    isPuertoValid() {
+      return this.servicio.puerto && this.servicio.puerto != "";
     },
-    isNombreValid() {
-      return this.servicio.nombre && this.servicio.nombre != "";
-    },
-    isVersionValid() {
-      return this.servicio.version && this.servicio.version != "";
-    },
+  },
+  async mounted() {
+    try {
+      await this.$store.dispatch("servidores/listarServidores");
+      await this.$store.dispatch("aplicaciones/listarAplicaciones");
+    } catch (error) {
+      this.alert(error || "Error desconocido.", "danger");
+    }
   },
 };
 </script>
