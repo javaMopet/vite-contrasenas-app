@@ -90,7 +90,7 @@
             </ul>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item active ms-3" v-if="isLoggedIn">                
-                <router-link to="" @click="logout" class="salir"><i class="bi bi-person-x"></i> Salir</router-link>                
+                <router-link to="" @click="logout" class="salir"><i class="bi bi-person-x fs-5"></i> Salir</router-link>                
               </li>
             </ul>
 
@@ -151,6 +151,7 @@ export default {
   font-family: "Titillium Web", sans-serif;
 }
 .salir{
+  font-weight: bold;  
   color: aquamarine;
   padding: 5px;
   border: 1px solid rgb(132, 228, 215);

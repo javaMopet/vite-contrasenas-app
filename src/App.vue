@@ -7,11 +7,12 @@
     <transition>
       <div id="miModal" class="modal-request" v-if="isProcesando">
         <div class="modal-request-contenido p-0">
-          <div class="container-fluid bg-white p-2 m-0">
-            <h1>Procesando..</h1>
+          <div class="container-fluid d-flex p-2 m-0">
+            <h1>Loading </h1>
             <div class="lds-ellipsis">
               <div></div>
               <div></div>
+              <div></div>              
             </div>
           </div>
         </div>
@@ -76,7 +77,8 @@ export default {
 <style scoped>
 /** MODAL css**/
 .modal-request-contenido {
-  background-color: gray;
+  background-color: rgb(23, 2, 58);
+  color: rgba(108, 255, 120, 0.8);
   width: 400px;
   padding: 10px 20px;
   margin: 20% auto;
@@ -85,7 +87,7 @@ export default {
 }
 
 .modal-request {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgb(173, 165, 189);
   position: fixed;
   top: 0;
   right: 0;

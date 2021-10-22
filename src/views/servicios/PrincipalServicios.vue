@@ -14,8 +14,7 @@
         >
           Add
         </button>
-      </div>
-      <!-- v-else-if="          !isLoading && filteredServicios && filteredServicios.length > 0        " -->
+      </div>      
       <table class="table table-sm table-secondary">
         <caption>
           Lista de servicios
