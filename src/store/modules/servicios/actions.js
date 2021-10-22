@@ -16,17 +16,14 @@ export default {
         context.commit("addServicios", getResults(response.data));
       })
       .catch(function (error) {
-        console.log(error.toJSON());
+        console.log(error.toJSON()); // DE LA DOCUMENTACION
         tratarError(error, context);
       })
       // .then(function () {
       //   console.info("then");
       // });
   }, 
-  async saveOrUpdate(context, payload) {
-    console.log("Guardando.....")
-    console.log(payload);
-    console.log(payload.servicio);
+  async saveOrUpdate(context, payload) {    
     var method = "";
     var url = host;
     if (payload.mode === "Guardar") {
@@ -45,8 +42,7 @@ export default {
       },
       data: JSON.stringify(payload.servicio),
     }).then((response) => {      
-      const responseData = response.data.data;   
-      console.log(responseData);
+      const responseData = response.data.data;         
       const servicioResponse = {
         id: responseData.attributes.id,
         servidorId: responseData.attributes.servidor.id,
@@ -60,9 +56,7 @@ export default {
         indice: payload.indice,
         servicio: servicioResponse
       });
-    }).catch(function (error) {
-      console.log("error en saveOrUpdate");
-      console.log(error);
+    }).catch(function (error) {      
       tratarError(error, context);
     }).then(function () {
       console.info("then save or update");
@@ -92,8 +86,7 @@ export default {
 
 const getResults = (response) => {  
   const responseData = response.data;  
-  const results = [];
-  console.log(responseData);
+  const results = [];  
   for (const id in responseData) {
     results.push({      
       id: responseData[id].attributes.id,
@@ -115,8 +108,7 @@ const tratarError = (error, context) => {
       context.dispatch("logout", "", { root: true }); //Se especifica que la accion es del módulo root
       router.replace("/auth/login?sessionExpired=true");
       return;
-    }
-    console.log(error);
+    }    
     throw new Error('error desconocido');
   } else if (error.request) {
     if (error.request.timeout === 0 && error.request.status === 0) {
